@@ -63,6 +63,8 @@ def process_scraping_job(job_data):
         update_job_status(user_id, job_id, 'failed', {'error': error_message})
         return None
 
+# workers/tasks.py (update the worker_thread function)
+
 def worker_thread():
     """Worker thread that processes jobs from queue"""
     print(f"Worker thread started")
@@ -73,8 +75,16 @@ def worker_thread():
             job_data = queue_manager.get_job(timeout=1)
             
             if job_data:
-                print(f"Processing job: {job_data['job_id']}")
-                process_scraping_job(job_data)
+                job_type = job_data.get('type', 'scraping')  # Default to scraping for backward compatibility
+                
+                # Only process scraping jobs
+                if job_type == 'scraping' or 'url' in job_data:  # Check for scraping job
+                    print(f"Processing job: {job_data['job_id']}")
+                    process_scraping_job(job_data)
+                else:
+                    # Not a scraping job, put it back for other workers
+                    queue_manager.add_job(job_data)
+                    time.sleep(0.1)  # Small delay to prevent tight loop
             else:
                 # No job available, wait a bit
                 time.sleep(1)
@@ -82,6 +92,7 @@ def worker_thread():
         except Exception as e:
             print(f"Worker error: {str(e)}")
             time.sleep(1)
+
 
 def start_worker_threads():
     """Start multiple worker threads"""
