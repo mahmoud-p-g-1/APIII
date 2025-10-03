@@ -36,6 +36,7 @@ class ScrapingLogic:
                 'user_id': user_id,
                 'url': url,
                 'platform': platform,
+                'type': 'scraping',
                 'status': 'queued',
                 'is_test': is_test,
                 'created_at': datetime.now().isoformat(),

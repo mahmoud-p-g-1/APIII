@@ -1,4 +1,4 @@
-from .base_scraper import BaseScraper
+from base_scraper import BaseScraper
 from urllib.parse import urlparse
 import hashlib
 from datetime import datetime
@@ -30,12 +30,20 @@ class AliExpressScraper(BaseScraper):
     def safe_log(self, message):
         """Safely log messages that might contain Unicode characters"""
         try:
-            # Try to log normally first
+            # First try to log normally
             self.logger.info(message)
         except UnicodeEncodeError:
-            # If that fails, encode to ASCII with replacement
-            safe_message = message.encode('ascii', 'replace').decode('ascii')
-            self.logger.info(safe_message)
+            try:
+                # If that fails, encode to ASCII with replacement
+                safe_message = message.encode('ascii', 'replace').decode('ascii')
+                self.logger.info(safe_message)
+            except Exception:
+                # Final fallback - just log that we found a title
+                self.logger.info("Found product title (contains special characters)")
+        except Exception as e:
+            # Any other error, log safely
+            self.logger.info(f"Logging error occurred: {str(e)}")
+
     
     def validate_url(self, url):
         """Security: AliExpress URL validation"""

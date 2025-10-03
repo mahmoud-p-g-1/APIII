@@ -10,10 +10,210 @@ from firebase_config import verify_token, get_access_token
 from queue_manager import queue_manager
 import json
 import requests
+import tempfile
+from PIL import Image
+import io
+from urllib.parse import urlparse
 
 clothing_bp = Blueprint('clothing', __name__)
 
 FIREBASE_PROJECT_ID = "fitmatch-1"
+
+# Allowed domains for image URLs
+ALLOWED_DOMAINS = [
+    'amazon.com', 'www.amazon.com', 'images-na.ssl-images-amazon.com', 'm.media-amazon.com',
+    'ebay.com', 'www.ebay.com', 'i.ebayimg.com', 'p.turbosquid.com',
+    'aliexpress.com', 'www.aliexpress.com', 'ae01.alicdn.com', 'ae04.alicdn.com',
+    'alibaba.com', 'www.alibaba.com', 's.alicdn.com', 'sc04.alicdn.com',
+    'hm.com', 'www2.hm.com', 'lp2.hm.com', 'image.hm.com'
+]
+
+@clothing_bp.route('/store_image', methods=['POST'])
+def clothing_image_upload():
+    """Upload clothing image from code/base64 or URL (Amazon, eBay, AliExpress, Alibaba, H&M only) using multipart/form-data"""
+    try:
+        print(f"\n{'='*80}")
+        print(f"[CLOTHING IMAGE API] Clothing image upload request")
+        print(f"[CLOTHING IMAGE API] Timestamp: {datetime.now().isoformat()}")
+        print(f"{'='*80}")
+        
+        # Check authentication (optional)
+        auth_header = request.headers.get('Authorization')
+        user_id = None
+        is_authenticated = False
+        
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            user_info = verify_token(token)
+            if user_info:
+                user_id = user_info.get('uid') or user_info.get('user_id', 'unknown_user')
+                is_authenticated = True
+                print(f"[CLOTHING IMAGE API] Authenticated user: {user_id}")
+        
+        if not is_authenticated:
+            user_id = f"guest_{uuid.uuid4().hex[:8]}"
+            print(f"[CLOTHING IMAGE API] Guest user: {user_id}")
+        
+        image_data = None
+        image_source = None
+        
+        # Method 1: Base64 encoded image from form data
+        if 'image_base64' in request.form:
+            try:
+                # Remove data URL prefix if present
+                base64_data = request.form['image_base64']
+                if base64_data.startswith('data:image'):
+                    base64_data = base64_data.split(',')[1]
+                
+                # Decode base64
+                import base64
+                image_bytes = base64.b64decode(base64_data)
+                image_data = io.BytesIO(image_bytes)
+                image_source = "base64_code"
+                
+                print(f"[CLOTHING IMAGE API] ✓ Base64 image decoded successfully")
+                
+            except Exception as e:
+                return jsonify({'error': f'Invalid base64 image data: {str(e)}'}), 400
+        
+        # Method 2: URL from allowed domains
+        elif 'image_url' in request.form:
+            image_url = request.form['image_url']
+            
+            # Validate domain
+            parsed_url = urlparse(image_url)
+            domain = parsed_url.netloc.lower()
+            
+            # Check if domain is allowed
+            is_allowed_domain = False
+            for allowed_domain in ALLOWED_DOMAINS:
+                if domain == allowed_domain or domain.endswith('.' + allowed_domain):
+                    is_allowed_domain = True
+                    break
+            
+            if not is_allowed_domain:
+                return jsonify({
+                    'error': 'URL domain not allowed',
+                    'allowed_domains': ['Amazon.com', 'eBay.com', 'AliExpress.com', 'Alibaba.com', 'H&M.com'],
+                    'provided_domain': domain
+                }), 400
+            
+            try:
+                # Download image from URL
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                
+                response = requests.get(image_url, headers=headers, timeout=30)
+                response.raise_for_status()
+                
+                # Validate content type
+                content_type = response.headers.get('content-type', '').lower()
+                if not content_type.startswith('image/'):
+                    return jsonify({'error': 'URL does not point to an image'}), 400
+                
+                image_data = io.BytesIO(response.content)
+                image_source = f"url_{domain}"
+                
+                print(f"[CLOTHING IMAGE API] ✓ Image downloaded from: {domain}")
+                
+            except requests.exceptions.RequestException as e:
+                return jsonify({'error': f'Failed to download image: {str(e)}'}), 400
+        
+        else:
+            return jsonify({'error': 'Either image_base64 or image_url must be provided'}), 400
+        
+        # Validate and process image
+        try:
+            # Open image with PIL to validate
+            pil_image = Image.open(image_data)
+            
+            # Validate image dimensions
+            width, height = pil_image.size
+            if width < 100 or height < 100:
+                return jsonify({'error': 'Image too small (minimum 100x100 pixels)'}), 400
+            
+            if width > 4000 or height > 4000:
+                return jsonify({'error': 'Image too large (maximum 4000x4000 pixels)'}), 400
+            
+            # Convert to RGB if necessary
+            if pil_image.mode in ('RGBA', 'P'):
+                pil_image = pil_image.convert('RGB')
+            
+            print(f"[CLOTHING IMAGE API] ✓ Image validated: {width}x{height} pixels")
+            
+        except Exception as e:
+            return jsonify({'error': f'Invalid image format: {str(e)}'}), 400
+        
+        # Generate job ID
+        job_id = str(uuid.uuid4())
+        
+        # Create directory structure
+        if is_authenticated:
+            job_dir = os.path.join('clothing_data', 'auth_users', user_id, job_id)
+        else:
+            job_dir = os.path.join('clothing_data', 'guest_users', user_id, job_id)
+        
+        os.makedirs(job_dir, exist_ok=True)
+        
+        # Save image
+        image_filename = f'clothing_image_{job_id}.jpg'
+        image_path = os.path.join(job_dir, image_filename)
+        
+        # Save as JPEG
+        pil_image.save(image_path, 'JPEG', quality=90)
+        
+        print(f"[CLOTHING IMAGE API] ✓ Image saved: {image_path}")
+        
+        # Get body measurements if provided (for authenticated users)
+        body_measurements = None
+        if is_authenticated and 'body_measurements' in request.form:
+            try:
+                body_measurements_str = request.form['body_measurements']
+                body_measurements = json.loads(body_measurements_str)
+                body_measurements['user_id'] = user_id
+                print(f"[CLOTHING IMAGE API] ✓ Body measurements provided for comparison")
+                
+            except json.JSONDecodeError:
+                return jsonify({'error': 'Invalid body measurements JSON format'}), 400
+        
+        # Create job data
+        job_data = {
+            'job_id': job_id,
+            'user_id': user_id,
+            'type': 'clothing_measurement_auth' if is_authenticated else 'clothing_measurement',
+            'clothing_image': image_path,
+            'job_dir': job_dir,
+            'is_test': not is_authenticated,
+            'image_source': image_source,
+            'created_at': datetime.now().isoformat()
+        }
+        
+        if body_measurements:
+            job_data['body_measurements'] = body_measurements
+        
+        # Add to processing queue
+        queue_manager.add_job(job_data)
+        
+        # Response
+        response_data = {
+            'status': 'queued',
+            'job_id': job_id,
+            'message': 'Clothing image uploaded and queued for measurement analysis',
+            'image_source': image_source,
+            'user_type': 'authenticated' if is_authenticated else 'guest',
+            'has_body_comparison': body_measurements is not None,
+            'image_dimensions': f"{width}x{height}",
+            'allowed_domains': ['Amazon.com', 'eBay.com', 'AliExpress.com', 'Alibaba.com', 'H&M.com']
+        }
+        
+        print(f"[CLOTHING IMAGE API] ✓ Job queued successfully: {job_id}")
+        
+        return jsonify(response_data), 202
+        
+    except Exception as e:
+        print(f"[CLOTHING IMAGE API] ✗ Error: {str(e)}")
+        return jsonify({'error': f'Processing failed: {str(e)}'}), 500
 
 @clothing_bp.route('/test-measurement', methods=['POST'])
 def test_clothing_measurement():

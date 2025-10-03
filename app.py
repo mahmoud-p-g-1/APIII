@@ -18,10 +18,14 @@ from api.clothing.routes import clothing_bp
 # Import workers
 from workers.measurement_worker import start_measurement_worker
 from workers.clothing_worker import start_clothing_worker
+from workers.scraping_worker import start_scraping_worker
 
 # Import utilities
 from firebase_config import verify_token
 from queue_manager import queue_manager
+from dotenv import load_dotenv
+load_dotenv()  # This loads the .env file
+
 
 # Create Flask app
 app = Flask(__name__)
@@ -35,27 +39,7 @@ app.register_blueprint(measurements_bp, url_prefix='/api/measurements')
 app.register_blueprint(scraping_bp, url_prefix='/api/scraping')
 app.register_blueprint(clothing_bp, url_prefix='/api/clothing')
 
-@app.route('/', methods=['GET'])
-def home():
-    """Home endpoint"""
-    return jsonify({
-        'message': 'Professional Measurement & Clothing Analysis API',
-        'version': '2.0.0',
-        'services': {
-            'body_measurements': '/api/measurements/',
-            'clothing_measurements': '/api/clothing/',
-            'web_scraping': '/api/scraping/'
-        },
-        'features': [
-            'Professional body measurements with VTON optimization',
-            'Clothing measurement and size recommendation',
-            'Google Vision API integration for clothing analysis',
-            'Forbidden item filtering',
-            'Firebase authentication and storage',
-            'Real-time job processing with queue system'
-        ],
-        'timestamp': datetime.now().isoformat()
-    }), 200
+
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -98,6 +82,18 @@ def health_check():
             'timestamp': datetime.now().isoformat()
         }), 500
 
+
+
+@app.route('/')
+def index():
+    return jsonify({
+        'service': 'FitMatch API',
+        'version': '1.0.0',
+        'status': 'running',
+        'timestamp': datetime.now().isoformat(),
+    }), 200
+    
+    
 @app.route('/api/queue/status', methods=['GET'])
 def queue_status():
     """Get queue status"""
@@ -259,12 +255,17 @@ def start_workers():
         clothing_thread = start_clothing_worker()
         print(f"[WORKERS] ✓ Clothing worker started")
         
+        print(f"[WORKERS] Starting scraping worker...")
+        scraping_thread = start_scraping_worker()
+        print(f"[WORKERS] ✓ Scraping worker started")
+        
         print(f"[WORKERS] ✓ All workers started successfully")
         print(f"{'='*80}\n")
         
         return {
             'measurement_worker': measurement_thread,
-            'clothing_worker': clothing_thread
+            'clothing_worker': clothing_thread,
+            'scraping_worker': scraping_thread
         }
         
     except Exception as e:
@@ -274,8 +275,8 @@ def start_workers():
 
 if __name__ == '__main__':
     print(f"\n{'='*100}")
-    print(f"[APP STARTUP] Professional Measurement & Clothing Analysis API")
-    print(f"[APP STARTUP] Version: 2.0.0")
+    print(f"[APP STARTUP] FitMatch API Service")
+    print(f"[APP STARTUP] Version: 1.0.0")
     print(f"[APP STARTUP] Timestamp: {datetime.now().isoformat()}")
     print(f"{'='*100}")
     
@@ -295,32 +296,6 @@ if __name__ == '__main__':
         if workers:
             print(f"\n[INIT] ✓ Application initialization completed successfully")
             
-            # Display available endpoints
-            print(f"\n[ENDPOINTS] Available API endpoints:")
-            print(f"  • Body Measurements (Test): POST /api/measurements/test-process")
-            print(f"  • Body Measurements (Auth): POST /api/measurements/auth-process")
-            print(f"  • Clothing Measurements (Test): POST /api/clothing/test-measurement")
-            print(f"  • Clothing Measurements (Auth): POST /api/clothing/auth-measurement")
-            print(f"  • Web Scraping: POST /api/scraping/scrape")
-            print(f"  • Health Check: GET /health")
-            print(f"  • Queue Status: GET /api/queue/status")
-            print(f"  • Auth Verification: POST /api/auth/verify")
-            
-            print(f"\n[FEATURES] System capabilities:")
-            print(f"  ✓ Professional body measurements with VTON optimization")
-            print(f"  ✓ Clothing measurement and size recommendation")
-            print(f"  ✓ Google Vision API integration (firebase-service-account.json)")
-            print(f"  ✓ Forbidden item filtering (underwear, electronics, etc.)")
-            print(f"  ✓ Firebase authentication and Firestore storage")
-            print(f"  ✓ Real-time job processing with queue system")
-            print(f"  ✓ Professional sizing: S/M/L/XL/XXL (NO XS)")
-            print(f"  ✓ Hardcoded inseam data from professional standards")
-            
-            print(f"\n[SERVER] Starting Flask development server...")
-            print(f"[SERVER] Host: 127.0.0.1")
-            print(f"[SERVER] Port: 5000")
-            print(f"[SERVER] Debug: False (as requested)")
-            print(f"[SERVER] Reloader: False")
             print(f"{'='*100}\n")
             
             # Start Flask app (debug=False as requested)

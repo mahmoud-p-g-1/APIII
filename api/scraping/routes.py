@@ -1,6 +1,6 @@
 # api/scraping/routes.py
 from flask import Blueprint, request, jsonify
-from firebase_config import require_auth, save_job_to_firestore, get_job_from_firestore, get_user_imports
+from firebase_config import get_scraped_data_from_firestore, require_auth, save_job_to_firestore, get_job_from_firestore, get_user_imports
 from security import validate_url_security, detect_platform
 from queue_manager import queue_manager
 from utils.rate_limiter import check_rate_limit
@@ -59,6 +59,7 @@ def scrape_with_auth():
             'user_id': user_id,
             'url': url,
             'platform': platform,
+            'type': 'scraping',
             'status': 'queued',
             'created_at': datetime.now().isoformat(),
             'updated_at': datetime.now().isoformat()
@@ -120,6 +121,7 @@ def test_scrape():
             'user_id': 'test_user',
             'url': url,
             'platform': platform,
+            'type': 'scraping',
             'status': 'queued',
             'created_at': datetime.now().isoformat(),
             'updated_at': datetime.now().isoformat()
@@ -145,12 +147,41 @@ def test_scrape():
 @scraping_bp.route('/job/<job_id>', methods=['GET'])
 @require_auth
 def get_job_status(job_id):
-    """Get job status - NO RATE LIMIT"""
+    """Get job status with results if completed - NO RATE LIMIT"""
     try:
         user_id = request.user['uid']
         job_data = get_job_from_firestore(user_id, job_id)
         
         if job_data:
+            # If job is completed, try to get the scraped results
+            if job_data.get('status') == 'completed' and 'importId' in job_data:
+                try:
+                    # Get the actual scraped data from Firestore
+                    import_id = job_data['importId']
+                    scraped_data = get_scraped_data_from_firestore(user_id, import_id)
+                    
+                    if scraped_data:
+                        # Add the scraped results to the job response
+                        job_data['results'] = {
+                            'platform': scraped_data.get('retailer', job_data.get('platform')),
+                            'name': scraped_data.get('name', 'Unknown Product'),
+                            'images': scraped_data.get('imageUrls', []),
+                            'import_id': import_id,
+                            'product_url': scraped_data.get('productUrl', job_data.get('url')),
+                            'created_at': scraped_data.get('createdAt'),
+                            'scraped_successfully': True
+                        }
+                        
+                        # Add individual image URLs for easy access
+                        for i in range(1, 6):
+                            img_key = f'imageUrl{i}'
+                            if img_key in scraped_data:
+                                job_data['results'][f'image_{i}'] = scraped_data[img_key]
+                
+                except Exception as e:
+                    print(f"Error getting scraped results: {str(e)}")
+                    # Still return job data even if we can't get results
+            
             return jsonify(job_data), 200
         else:
             return jsonify({'error': 'Job not found'}), 404
@@ -165,12 +196,42 @@ def get_test_job_status(job_id):
         job_data = get_job_from_firestore('test_user', job_id)
         
         if job_data:
+            # If job is completed, try to get the scraped results
+            if job_data.get('status') == 'completed' and 'importId' in job_data:
+                try:
+                    # Get the actual scraped data from Firestore
+                    import_id = job_data['importId']
+                    scraped_data = get_scraped_data_from_firestore('test_user', import_id)
+                    
+                    if scraped_data:
+                        # Add the scraped results to the job response
+                        job_data['results'] = {
+                            'platform': scraped_data.get('retailer', job_data.get('platform')),
+                            'name': scraped_data.get('name', 'Unknown Product'),
+                            'images': scraped_data.get('imageUrls', []),
+                            'import_id': import_id,
+                            'product_url': scraped_data.get('productUrl', job_data.get('url')),
+                            'created_at': scraped_data.get('createdAt'),
+                            'scraped_successfully': True
+                        }
+                        
+                        # Add individual image URLs for easy access
+                        for i in range(1, 6):
+                            img_key = f'imageUrl{i}'
+                            if img_key in scraped_data:
+                                job_data['results'][f'image_{i}'] = scraped_data[img_key]
+                
+                except Exception as e:
+                    print(f"Error getting scraped results: {str(e)}")
+                    # Still return job data even if we can't get results
+            
             return jsonify(job_data), 200
         else:
             return jsonify({'error': 'Job not found'}), 404
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @scraping_bp.route('/my-imports', methods=['GET'])
 @require_auth

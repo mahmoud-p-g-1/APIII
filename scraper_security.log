@@ -1,0 +1,158 @@
+2025-10-04 00:30:02,274 - WARNING - ScrapingBee API key not found, using direct requests
+2025-10-04 00:30:05,270 - INFO - Making direct request to: https://www.aliexpress.us/item/3256808842649818.ht... (Attempt 1)
+2025-10-04 00:30:09,739 - INFO - Direct request successful
+2025-10-04 00:30:09,793 - INFO - Validating clothing product on AliExpress...
+2025-10-04 00:30:09,794 - INFO - Successfully extracted DCData JSON
+2025-10-04 00:30:09,800 - INFO - No forbidden keywords found, assuming valid clothing
+2025-10-04 00:30:09,801 - INFO - Successfully extracted DCData JSON
+2025-10-04 00:30:09,802 - INFO - Extracted 6 AliExpress images
+2025-10-04 00:30:09,802 - INFO - Product data extracted successfully from AliExpress
+2025-10-04 00:32:03,794 - INFO - 127.0.0.1 - - [04/Oct/2025 00:32:03] "GET /api/scraping/job/e7aa6a81-5590-4855-ae02-2ebb831b8d36 HTTP/1.1" 200 -
+2025-10-04 00:39:48,696 - INFO - ScrapingBee integration enabled
+2025-10-04 00:39:52,810 - INFO - Making ScrapingBee request to: https://aliexpress.com/item/1005009293361203.html...
+2025-10-04 00:39:52,810 - INFO - Settings: JS=true, Premium=true, Wait=3000ms
+2025-10-04 00:39:53,324 - ERROR - ScrapingBee request failed: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Faliexpress.com%2Fitem%2F1005009293361203.html&render_js=true&premium_proxy=true&country_code=us&wait=3000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_372&wait_for=.product-title
+2025-10-04 00:39:53,325 - WARNING - ScrapingBee failed, falling back to direct request: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Faliexpress.com%2Fitem%2F1005009293361203.html&render_js=true&premium_proxy=true&country_code=us&wait=3000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_372&wait_for=.product-title
+2025-10-04 00:39:53,325 - INFO - Making direct request to: https://aliexpress.com/item/1005009293361203.html... (Attempt 1)
+2025-10-04 00:39:55,253 - INFO - Direct request successful
+2025-10-04 00:39:55,312 - INFO - Validating clothing product on AliExpress...
+2025-10-04 00:39:55,312 - INFO - Successfully extracted DCData JSON
+2025-10-04 00:39:55,321 - INFO - No forbidden keywords found, assuming valid clothing
+2025-10-04 00:39:55,321 - INFO - Successfully extracted DCData JSON
+2025-10-04 00:39:55,322 - INFO - Extracted 6 AliExpress images
+2025-10-04 00:39:55,322 - INFO - Product data extracted successfully from AliExpress
+2025-10-04 00:43:59,070 - INFO - ScrapingBee integration enabled
+2025-10-04 00:44:03,838 - INFO - Making ScrapingBee request to: https://aliexpress.com/item/1005009293361203.html...
+2025-10-04 00:44:03,838 - INFO - Settings: JS=true, Premium=true, Wait=3000ms
+2025-10-04 00:44:04,271 - ERROR - ScrapingBee request failed: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Faliexpress.com%2Fitem%2F1005009293361203.html&render_js=true&premium_proxy=true&country_code=us&wait=3000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_33
+2025-10-04 00:44:04,271 - WARNING - ScrapingBee failed, falling back to direct request: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Faliexpress.com%2Fitem%2F1005009293361203.html&render_js=true&premium_proxy=true&country_code=us&wait=3000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_33
+2025-10-04 00:44:04,272 - INFO - Making direct request to: https://aliexpress.com/item/1005009293361203.html... (Attempt 1)
+2025-10-04 00:44:06,225 - INFO - Direct request successful
+2025-10-04 00:44:06,283 - INFO - Validating clothing product on AliExpress...
+2025-10-04 00:44:06,283 - INFO - Successfully extracted DCData JSON
+2025-10-04 00:44:06,288 - INFO - No forbidden keywords found, assuming valid clothing
+2025-10-04 00:44:06,288 - INFO - Successfully extracted DCData JSON
+2025-10-04 00:44:06,289 - INFO - Extracted 6 AliExpress images
+2025-10-04 00:44:06,289 - INFO - Product data extracted successfully from AliExpress
+2025-10-04 00:44:45,785 - INFO - 127.0.0.1 - - [04/Oct/2025 00:44:45] "[35m[1mPOST /api/scraping/scrape HTTP/1.1[0m" 202 -
+2025-10-04 00:44:46,726 - INFO - ScrapingBee integration enabled
+2025-10-04 00:44:49,394 - INFO - Making ScrapingBee request to: https://www.amazon.com/French-Toast-Little-Sleeve-...
+2025-10-04 00:44:49,394 - INFO - Settings: JS=true, Premium=true, Wait=2000ms
+2025-10-04 00:44:49,781 - ERROR - ScrapingBee request failed: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Fwww.amazon.com%2FFrench-Toast-Little-Sleeve-Collar%2Fdp%2FB01N3M8S0K&render_js=true&premium_proxy=true&country_code=us&wait=2000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_329
+2025-10-04 00:44:49,781 - WARNING - ScrapingBee failed, falling back to direct request: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Fwww.amazon.com%2FFrench-Toast-Little-Sleeve-Collar%2Fdp%2FB01N3M8S0K&render_js=true&premium_proxy=true&country_code=us&wait=2000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_329
+2025-10-04 00:44:49,782 - INFO - Making direct request to: https://www.amazon.com/French-Toast-Little-Sleeve-... (Attempt 1)
+2025-10-04 00:44:51,904 - INFO - Direct request successful
+2025-10-04 00:44:52,104 - INFO - Validating clothing product on Amazon...
+2025-10-04 00:44:52,107 - INFO - Found title: french toast girls long sleeve woven shirt with peter pan collar (standard plus)...
+2025-10-04 00:44:52,108 - INFO - Found allowed clothing keyword 'shirt' in title
+2025-10-04 00:44:52,207 - INFO - Extracted 10 raw Amazon images
+2025-10-04 00:44:52,207 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 00:44:52,208 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 00:44:52,208 - INFO - Transformed image: 31539XI4vwL to high resolution
+2025-10-04 00:44:52,208 - INFO - Transformed image: 317W8MHY1aL to high resolution
+2025-10-04 00:44:52,208 - INFO - Transformed image: 31VpgHZA6aL to high resolution
+2025-10-04 00:44:52,208 - INFO - Product data extracted successfully from Amazon
+2025-10-04 00:52:29,580 - INFO - ScrapingBee integration enabled
+2025-10-04 00:52:32,675 - INFO - Making ScrapingBee request to: https://www.amazon.com/French-Toast-Little-Sleeve-...
+2025-10-04 00:52:32,675 - INFO - Settings: JS=true, Premium=true, Wait=2000ms
+2025-10-04 00:52:33,132 - ERROR - ScrapingBee request failed: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Fwww.amazon.com%2FFrench-Toast-Little-Sleeve-Collar%2Fdp%2FB01N3M8S0K&render_js=true&premium_proxy=true&country_code=us&wait=2000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_205
+2025-10-04 00:52:33,132 - WARNING - ScrapingBee failed, falling back to direct request: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Fwww.amazon.com%2FFrench-Toast-Little-Sleeve-Collar%2Fdp%2FB01N3M8S0K&render_js=true&premium_proxy=true&country_code=us&wait=2000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_205
+2025-10-04 00:52:33,133 - INFO - Making direct request to: https://www.amazon.com/French-Toast-Little-Sleeve-... (Attempt 1)
+2025-10-04 00:52:35,486 - INFO - Direct request successful
+2025-10-04 00:52:35,740 - INFO - Validating clothing product on Amazon...
+2025-10-04 00:52:35,743 - INFO - Found title: french toast girls long sleeve woven shirt with peter pan collar (standard plus)...
+2025-10-04 00:52:35,743 - INFO - Found allowed clothing keyword 'shirt' in title
+2025-10-04 00:52:35,849 - INFO - Extracted 10 raw Amazon images
+2025-10-04 00:52:35,849 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 00:52:35,849 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 00:52:35,849 - INFO - Transformed image: 31539XI4vwL to high resolution
+2025-10-04 00:52:35,850 - INFO - Transformed image: 317W8MHY1aL to high resolution
+2025-10-04 00:52:35,850 - INFO - Transformed image: 31VpgHZA6aL to high resolution
+2025-10-04 00:52:35,850 - INFO - Product data extracted successfully from Amazon
+2025-10-04 00:58:14,028 - INFO - ScrapingBee integration enabled
+2025-10-04 00:58:18,093 - INFO - Making ScrapingBee request to: https://www.amazon.com/French-Toast-Little-Sleeve-...
+2025-10-04 00:58:18,093 - INFO - Settings: JS=true, Premium=true, Wait=2000ms
+2025-10-04 00:58:18,580 - ERROR - ScrapingBee request failed: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Fwww.amazon.com%2FFrench-Toast-Little-Sleeve-Collar%2Fdp%2FB01N3M8S0K&render_js=true&premium_proxy=true&country_code=us&wait=2000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_438
+2025-10-04 00:58:18,580 - WARNING - ScrapingBee failed, falling back to direct request: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Fwww.amazon.com%2FFrench-Toast-Little-Sleeve-Collar%2Fdp%2FB01N3M8S0K&render_js=true&premium_proxy=true&country_code=us&wait=2000&block_ads=true&block_resources=false&stealth_proxy=true&session_id=session_438
+2025-10-04 00:58:18,581 - INFO - Making direct request to: https://www.amazon.com/French-Toast-Little-Sleeve-... (Attempt 1)
+2025-10-04 00:58:20,691 - INFO - Direct request successful
+2025-10-04 00:58:20,878 - INFO - Validating clothing product on Amazon...
+2025-10-04 00:58:20,881 - INFO - Found title: french toast girls long sleeve woven shirt with peter pan collar (standard plus)...
+2025-10-04 00:58:20,881 - INFO - Found allowed clothing keyword 'shirt' in title
+2025-10-04 00:58:20,980 - INFO - Extracted 10 raw Amazon images
+2025-10-04 00:58:20,980 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 00:58:20,981 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 00:58:20,981 - INFO - Transformed image: 31539XI4vwL to high resolution
+2025-10-04 00:58:20,982 - INFO - Transformed image: 317W8MHY1aL to high resolution
+2025-10-04 00:58:20,982 - INFO - Transformed image: 31VpgHZA6aL to high resolution
+2025-10-04 00:58:20,982 - INFO - Product data extracted successfully from Amazon
+2025-10-04 01:01:49,014 - INFO - ScrapingBee integration enabled
+2025-10-04 01:01:52,639 - INFO - Making ScrapingBee request to: https://www.amazon.com/French-Toast-Little-Sleeve-...
+2025-10-04 01:01:52,639 - INFO - Settings: JS=true, Premium=true, Wait=2000ms
+2025-10-04 01:01:53,240 - ERROR - ScrapingBee request failed: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Fwww.amazon.com%2FFrench-Toast-Little-Sleeve-Collar%2Fdp%2FB01N3M8S0K&render_js=true&premium_proxy=true&country_code=us&wait=2000&block_ads=true&block_resources=false&session_id=session_310
+2025-10-04 01:01:53,240 - WARNING - ScrapingBee failed, falling back to direct request: 400 Client Error: BAD REQUEST for url: https://app.scrapingbee.com/api/v1/?api_key=0QGWM9IUCF3Y3T2OO6WX9EBA5GE81JJ7KO11RCLOPAHJDQ9RWTMI70RU9EFI7162T8FVFOTUP5LIW80I&url=https%3A%2F%2Fwww.amazon.com%2FFrench-Toast-Little-Sleeve-Collar%2Fdp%2FB01N3M8S0K&render_js=true&premium_proxy=true&country_code=us&wait=2000&block_ads=true&block_resources=false&session_id=session_310
+2025-10-04 01:01:53,241 - INFO - Making direct request to: https://www.amazon.com/French-Toast-Little-Sleeve-... (Attempt 1)
+2025-10-04 01:01:55,465 - INFO - Direct request successful
+2025-10-04 01:01:55,679 - INFO - Validating clothing product on Amazon...
+2025-10-04 01:01:55,682 - INFO - Found title: french toast girls long sleeve woven shirt with peter pan collar (standard plus)...
+2025-10-04 01:01:55,683 - INFO - Found allowed clothing keyword 'shirt' in title
+2025-10-04 01:01:55,787 - INFO - Extracted 10 raw Amazon images
+2025-10-04 01:01:55,788 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 01:01:55,788 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 01:01:55,788 - INFO - Transformed image: 31539XI4vwL to high resolution
+2025-10-04 01:01:55,788 - INFO - Transformed image: 317W8MHY1aL to high resolution
+2025-10-04 01:01:55,789 - INFO - Transformed image: 31VpgHZA6aL to high resolution
+2025-10-04 01:01:55,789 - INFO - Product data extracted successfully from Amazon
+2025-10-04 01:09:23,627 - INFO - ScrapingBee integration enabled
+2025-10-04 01:09:25,797 - INFO - Making ScrapingBee request to: https://www.amazon.com/French-Toast-Little-Sleeve-...
+2025-10-04 01:09:25,797 - INFO - Settings: JS=True, Premium=True, Wait=2000ms
+2025-10-04 01:09:33,708 - INFO - ScrapingBee request cost: 25 credits
+2025-10-04 01:09:33,709 - INFO - ScrapingBee request successful
+2025-10-04 01:09:33,946 - INFO - Validating clothing product on Amazon...
+2025-10-04 01:09:33,951 - INFO - Found title: french toast girls long sleeve woven shirt with peter pan collar (standard plus)...
+2025-10-04 01:09:33,952 - INFO - Found allowed clothing keyword 'shirt' in title
+2025-10-04 01:09:34,076 - INFO - Extracted 10 raw Amazon images
+2025-10-04 01:09:34,077 - INFO - Transformed image: 71vUejPcAXL to high resolution
+2025-10-04 01:09:34,077 - INFO - Transformed image: 31y649x9YUL to high resolution
+2025-10-04 01:09:34,077 - INFO - Transformed image: 31BZPGn205L to high resolution
+2025-10-04 01:09:34,078 - INFO - Transformed image: 41hNzFzkShL to high resolution
+2025-10-04 01:09:34,078 - INFO - Transformed image: 21QQKzeg0bL to high resolution
+2025-10-04 01:09:34,078 - INFO - Product data extracted successfully from Amazon
+2025-10-04 01:11:22,049 - INFO - 127.0.0.1 - - [04/Oct/2025 01:11:22] "[35m[1mPOST /api/scraping/scrape HTTP/1.1[0m" 202 -
+2025-10-04 01:11:23,231 - INFO - ScrapingBee integration enabled
+2025-10-04 01:11:25,621 - INFO - Making ScrapingBee request to: https://www.aliexpress.us/item/3256808842649818.ht...
+2025-10-04 01:11:25,621 - INFO - Settings: JS=False, Premium=True, Wait=1000ms
+2025-10-04 01:11:29,916 - INFO - ScrapingBee request cost: 10 credits
+2025-10-04 01:11:29,916 - INFO - ScrapingBee fallback request successful
+2025-10-04 01:11:29,977 - INFO - Validating clothing product on AliExpress...
+2025-10-04 01:11:29,977 - INFO - Successfully extracted DCData JSON
+2025-10-04 01:11:29,978 - INFO - Found title: 2025 mens glitter sequins splice long sleeve shirt trend sexy festival banquet stage performance cos...
+2025-10-04 01:11:29,978 - INFO - Found allowed clothing keyword 'shirt' in title
+2025-10-04 01:11:29,979 - INFO - Successfully extracted DCData JSON
+2025-10-04 01:11:29,979 - INFO - Extracted 6 AliExpress images
+2025-10-04 01:11:29,979 - INFO - Product data extracted successfully from AliExpress
+2025-10-04 01:12:35,010 - INFO - 127.0.0.1 - - [04/Oct/2025 01:12:35] "[35m[1mPOST /api/scraping/scrape HTTP/1.1[0m" 202 -
+2025-10-04 01:12:35,898 - INFO - ScrapingBee integration enabled
+2025-10-04 01:12:38,761 - INFO - Making ScrapingBee request to: https://www.alibaba.com/product-detail/Premium-Sex...
+2025-10-04 01:12:38,761 - INFO - Settings: JS=True, Premium=True, Wait=2500ms
+2025-10-04 01:12:44,570 - INFO - ScrapingBee request cost: 25 credits
+2025-10-04 01:12:44,570 - INFO - ScrapingBee request successful
+2025-10-04 01:12:45,507 - INFO - Validating clothing product on Alibaba...
+2025-10-04 01:12:45,507 - WARNING - Found FORBIDDEN underwear keyword 'lingerie' in URL - REJECTING
+2025-10-04 01:14:40,673 - INFO - 127.0.0.1 - - [04/Oct/2025 01:14:40] "[35m[1mPOST /api/scraping/job/0c4379c1-29ac-443f-8184-f3b9b6231530 HTTP/1.1[0m" 500 -
+2025-10-04 01:14:44,684 - INFO - 127.0.0.1 - - [04/Oct/2025 01:14:44] "GET /api/scraping/job/0c4379c1-29ac-443f-8184-f3b9b6231530 HTTP/1.1" 200 -
+2025-10-04 01:15:03,710 - INFO - 127.0.0.1 - - [04/Oct/2025 01:15:03] "GET /api/scraping/job/b49d954c-c45c-4210-a437-8de595b66bd7 HTTP/1.1" 200 -
+2025-10-04 01:53:38,626 - INFO - ScrapingBee integration enabled
+2025-10-04 01:53:41,803 - INFO - Making ScrapingBee request to: https://www.aliexpress.us/item/3256808842649818.ht...
+2025-10-04 01:53:41,803 - INFO - Settings: JS=False, Premium=True, Wait=1000ms
+2025-10-04 01:53:46,837 - INFO - ScrapingBee request cost: 10 credits
+2025-10-04 01:53:46,837 - INFO - ScrapingBee fallback request successful
+2025-10-04 01:53:46,897 - INFO - Validating clothing product on AliExpress...
+2025-10-04 01:53:46,897 - INFO - Successfully extracted DCData JSON
+2025-10-04 01:53:46,897 - INFO - Found title: 2025 mens glitter sequins splice long sleeve shirt trend sexy festival banquet stage performance cos...
+2025-10-04 01:53:46,898 - INFO - Found allowed clothing keyword 'shirt' in title
+2025-10-04 01:53:46,898 - INFO - Successfully extracted DCData JSON
+2025-10-04 01:53:46,898 - INFO - Extracted 6 AliExpress images
+2025-10-04 01:53:46,899 - INFO - Product data extracted successfully from AliExpress
+2025-10-04 01:54:03,080 - INFO - 127.0.0.1 - - [04/Oct/2025 01:54:03] "GET /api/scraping/job/5281b052-889c-46bc-9946-5656153a2894 HTTP/1.1" 200 -
+2025-10-04 01:54:55,208 - INFO - 127.0.0.1 - - [04/Oct/2025 01:54:55] "GET /api/scraping/job/5281b052-889c-46bc-9946-5656153a2894 HTTP/1.1" 200 -

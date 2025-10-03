@@ -314,6 +314,57 @@ def save_scraping_to_firestore(user_id, scraping_result, url):
         print(f"Saved to in-memory storage: {import_id}")
         return import_id
 
+def get_scraped_data_from_firestore(user_id, import_id):
+    """Get scraped data from Firestore by import ID"""
+    try:
+        if firebase_initialized:
+            token = get_access_token()
+            if token:
+                # Try to get from user's subcollection first
+                url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{user_id}/urlImports/{import_id}"
+                
+                headers = {
+                    'Authorization': f'Bearer {token}',
+                    'Content-Type': 'application/json'
+                }
+                
+                response = requests.get(url, headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if 'fields' in data:
+                        # Convert Firestore format back to Python dict
+                        scraped_data = {}
+                        for key, value in data['fields'].items():
+                            scraped_data[key] = extract_value(value)
+                        return scraped_data
+                
+                # If not found in user subcollection, try main collection
+                url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/urlImports/{import_id}"
+                response = requests.get(url, headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if 'fields' in data:
+                        # Convert Firestore format back to Python dict
+                        scraped_data = {}
+                        for key, value in data['fields'].items():
+                            scraped_data[key] = extract_value(value)
+                        return scraped_data
+        
+        # Fallback to in-memory storage
+        if user_id in db_storage:
+            for key, value in db_storage[user_id].items():
+                if value.get('importId') == import_id:
+                    return value
+        
+        return None
+        
+    except Exception as e:
+        print(f"Error getting scraped data: {str(e)}")
+        return None
+
+
 def save_job_to_firestore(user_id, job_data):
     """Save scraping job (for tracking)"""
     try:

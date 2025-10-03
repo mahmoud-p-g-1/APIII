@@ -1,7 +1,7 @@
+# scrapers/__init__.py
+from .base_scraper import BaseScraper
 from .amazon_scraper import AmazonScraper
-from .alibaba_scraper import AlibabaScraper
 from .aliexpress_scraper import AliExpressScraper
 from .ebay_scraper import EbayScraper
-from .hm_scraper import HMScraper
 
-__all__ = ['AmazonScraper', 'AlibabaScraper', 'AliExpressScraper', 'EbayScraper', 'HMScraper']
+__all__ = ['BaseScraper', 'AmazonScraper', 'AliExpressScraper', 'EbayScraper']

@@ -10,6 +10,9 @@ import traceback
 import json
 import tempfile
 
+
+from image_quality_detector import ImageQualityDetector
+
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -410,6 +413,30 @@ def process_measurement_job(job_data):
         if not os.path.exists(front_image) or not os.path.exists(side_image):
             raise Exception(f"Image files not found")
         
+        
+        # ADD QUALITY CHECK HERE - BEFORE working directory creation
+        print(f"\n[QUALITY CHECK] Analyzing image quality...")
+        try:
+            quality_detector = ImageQualityDetector()
+            quality_results = quality_detector.detect_all_issues(front_image, side_image)
+            
+            print(f"[QUALITY CHECK] Quality analysis completed")
+            if quality_results['has_issues']:
+                print(f"[QUALITY CHECK] ⚠️  Primary issue: {quality_results['issue_type']}")
+                print(f"[QUALITY CHECK] Description: {quality_results['description']}")
+            else:
+                print(f"[QUALITY CHECK] ✓ Images are excellent quality")
+                
+        except Exception as e:
+            print(f"[QUALITY CHECK] Error during quality analysis: {str(e)}")
+            quality_results = {
+                'has_issues': False,
+                'issue_type': None,
+                'description': f"Quality check failed: {str(e)}",
+                'severity': 'none',
+                'affected_images': []
+            }
+        
         # Create working directory
         working_dir = tempfile.mkdtemp(prefix=f"measurement_{job_id}_")
         print(f"\n[SETUP] Creating working directory: {working_dir}")
@@ -690,7 +717,9 @@ current_distance_side = 200
                 'overall_confidence': overall_confidence,
                 'height_detection_method': 'automatic' if use_automatic_height else 'manual',
                 'detected_height': detected_height,
-                'processed_images': processed_images
+                'processed_images': processed_images,
+                'image_quality_issues': quality_results.get('issues', []),
+                'quality_analysis': quality_results
             }
             
             update_job_status(job_id, 'completed', result_data)
@@ -767,6 +796,12 @@ def update_job_status(job_id, status, result_data=None):
                             clean_measurements[k] = str(v)
                     
                     job_data['fields']['measurements'] = {'stringValue': json.dumps(clean_measurements)}
+                
+                # ADD THESE LINES for quality issues:
+                if 'image_quality_issues' in result_data:
+                    job_data['fields']['image_quality_issues'] = {
+                        'stringValue': json.dumps(result_data['image_quality_issues'])
+                    }
                 
                 # Store other data safely
                 if 'overall_confidence' in result_data:

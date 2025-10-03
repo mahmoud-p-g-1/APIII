@@ -1,4 +1,4 @@
-from .base_scraper import BaseScraper
+from base_scraper import BaseScraper
 from urllib.parse import urlparse
 import hashlib
 from datetime import datetime

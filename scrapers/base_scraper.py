@@ -3,9 +3,13 @@ from bs4 import BeautifulSoup
 import time
 import random
 import logging
+import os
 from datetime import datetime, timedelta
 from functools import wraps
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlencode
+
+# Add ScrapingBee import
+from scrapingbee import ScrapingBeeClient
 
 class BaseScraper:
     """Base scraper class with common functionality for all platforms"""
@@ -46,11 +50,70 @@ class BaseScraper:
         # Security: Maximum retries
         self.max_retries = 3
         
+        # ScrapingBee configuration
+        self.scrapingbee_api_key = os.getenv('SCRAPINGBEE_API_KEY')
+        self.use_scrapingbee = bool(self.scrapingbee_api_key)
+        
+        # Initialize ScrapingBee client
+        if self.use_scrapingbee:
+            self.scrapingbee_client = ScrapingBeeClient(api_key=self.scrapingbee_api_key)
+        else:
+            self.scrapingbee_client = None
+        
+        # ScrapingBee settings for different platforms
+        self.scrapingbee_settings = {
+            'aliexpress': {
+                'render_js': True,
+                'premium_proxy': True,
+                'wait': 3000,
+                'country_code': 'us',
+                'block_ads': True,
+                'block_resources': False
+            },
+            'amazon': {
+                'render_js': True,
+                'premium_proxy': True,
+                'wait': 2000,
+                'country_code': 'us',
+                'block_ads': True,
+                'block_resources': False
+            },
+            'hm': {
+                'render_js': True,
+                'premium_proxy': True,
+                'wait': 3000,
+                'country_code': 'us',
+                'block_ads': True,
+                'block_resources': False
+            },
+            'ebay': {
+                'render_js': False,
+                'premium_proxy': True,
+                'wait': 1000,
+                'country_code': 'us',
+                'block_ads': True,
+                'block_resources': True
+            },
+            'alibaba': {
+                'render_js': True,
+                'premium_proxy': True,
+                'wait': 2500,
+                'country_code': 'us',
+                'block_ads': True,
+                'block_resources': False
+            }
+        }
+        
         # Security: Setup logging
         self.setup_logging()
         
         # Security: Session configuration
         self.configure_session()
+        
+        if self.use_scrapingbee:
+            self.logger.info("ScrapingBee integration enabled")
+        else:
+            self.logger.warning("ScrapingBee API key not found, using direct requests")
         
         # Clothing validation data
         self.clothing_keywords = {
@@ -95,6 +158,94 @@ class BaseScraper:
         self.session.mount('http://', adapter)
         self.session.mount('https://', adapter)
     
+    def should_use_scrapingbee(self, url):
+        """Determine if ScrapingBee should be used for this URL"""
+        if not self.use_scrapingbee:
+            return False
+        
+        # JavaScript-heavy sites that benefit from ScrapingBee
+        js_heavy_domains = [
+            'aliexpress.com', 'alibaba.com', 'hm.com'
+        ]
+        
+        # High-blocking sites that need premium proxies
+        high_blocking_domains = [
+            'amazon.com', 'aliexpress.com', 'alibaba.com'
+        ]
+        
+        url_lower = url.lower()
+        
+        # Use ScrapingBee for JS-heavy or high-blocking sites
+        return any(domain in url_lower for domain in js_heavy_domains + high_blocking_domains)
+    
+    def get_scrapingbee_settings(self, url):
+        """Get ScrapingBee settings based on platform"""
+        url_lower = url.lower()
+        
+        # Determine platform from URL
+        if 'aliexpress.com' in url_lower:
+            return self.scrapingbee_settings.get('aliexpress', {})
+        elif 'amazon.com' in url_lower:
+            return self.scrapingbee_settings.get('amazon', {})
+        elif 'hm.com' in url_lower:
+            return self.scrapingbee_settings.get('hm', {})
+        elif 'ebay.com' in url_lower:
+            return self.scrapingbee_settings.get('ebay', {})
+        elif 'alibaba.com' in url_lower:
+            return self.scrapingbee_settings.get('alibaba', {})
+        else:
+            # Default settings
+            return {
+                'render_js': True,
+                'premium_proxy': True,
+                'wait': 2000,
+                'country_code': 'us',
+                'block_ads': True,
+                'block_resources': False
+            }
+    
+    def make_scrapingbee_request(self, url, **kwargs):
+        """Make request through ScrapingBee API using official client"""
+        if not self.scrapingbee_client:
+            raise ValueError("ScrapingBee client not configured")
+        
+        # Get platform-specific settings
+        platform_settings = self.get_scrapingbee_settings(url)
+        
+        # Merge with any provided kwargs
+        settings = {**platform_settings, **kwargs}
+        
+        try:
+            self.logger.info(f"Making ScrapingBee request to: {url[:50]}...")
+            self.logger.info(f"Settings: JS={settings.get('render_js')}, Premium={settings.get('premium_proxy')}, Wait={settings.get('wait')}ms")
+            
+            # Use the official ScrapingBee client
+            response = self.scrapingbee_client.get(
+                url,
+                params=settings,
+                retries=2  # Built-in retry mechanism
+            )
+            
+            # Log ScrapingBee metrics (available in response headers)
+            if hasattr(response, 'headers'):
+                if 'Spb-Cost' in response.headers:
+                    cost = response.headers['Spb-Cost']
+                    self.logger.info(f"ScrapingBee request cost: {cost} credits")
+                
+                if 'Spb-Response-Code' in response.headers:
+                    original_status = response.headers['Spb-Response-Code']
+                    self.logger.info(f"Original response status: {original_status}")
+                
+                if 'Spb-Proxy-Country' in response.headers:
+                    proxy_country = response.headers['Spb-Proxy-Country']
+                    self.logger.info(f"Proxy country: {proxy_country}")
+            
+            return response
+            
+        except Exception as e:
+            self.logger.error(f"ScrapingBee request failed: {str(e)}")
+            raise
+
     def rate_limit_decorator(func):
         """Security: Rate limiting decorator"""
         @wraps(func)
@@ -114,7 +265,12 @@ class BaseScraper:
             
             self.request_times.append(current_time)
             
-            delay = random.uniform(self.min_delay_between_requests, self.max_delay_between_requests)
+            # Reduce delay when using ScrapingBee (they handle rate limiting)
+            if hasattr(self, '_using_scrapingbee') and self._using_scrapingbee:
+                delay = random.uniform(0.5, 1.5)
+            else:
+                delay = random.uniform(self.min_delay_between_requests, self.max_delay_between_requests)
+            
             time.sleep(delay)
             
             return func(self, *args, **kwargs)
@@ -148,12 +304,44 @@ class BaseScraper:
     
     @rate_limit_decorator
     def make_secure_request(self, url):
-        """Security: Make a secure HTTP request with error handling"""
+        """Security: Make a secure HTTP request with ScrapingBee fallback"""
+        
+        # Check if we should use ScrapingBee for this URL
+        should_use_sb = self.should_use_scrapingbee(url)
+        
+        if should_use_sb:
+            try:
+                self._using_scrapingbee = True
+                response = self.make_scrapingbee_request(url)
+                self.logger.info("ScrapingBee request successful")
+                return response
+            except Exception as e:
+                self.logger.warning(f"ScrapingBee failed, falling back to direct request: {str(e)}")
+                self._using_scrapingbee = False
+        
+        # Fallback to ScrapingBee without JS rendering if available
+        if self.use_scrapingbee and not should_use_sb:
+            try:
+                self._using_scrapingbee = True
+                response = self.make_scrapingbee_request(
+                    url,
+                    render_js=False,
+                    premium_proxy=True,
+                    wait=1000
+                )
+                self.logger.info("ScrapingBee fallback request successful")
+                return response
+            except Exception as e:
+                self.logger.warning(f"ScrapingBee fallback failed: {str(e)}")
+                self._using_scrapingbee = False
+        
+        # Direct request as final fallback
+        self._using_scrapingbee = False
         for attempt in range(self.max_retries):
             try:
                 self.session.headers.update(self.get_random_headers())
                 
-                self.logger.info(f"Making request to: {url[:50]}... (Attempt {attempt + 1})")
+                self.logger.info(f"Making direct request to: {url[:50]}... (Attempt {attempt + 1})")
                 
                 response = self.session.get(
                     url, 
@@ -171,7 +359,7 @@ class BaseScraper:
                 if len(response.content) > 10 * 1024 * 1024:
                     raise ValueError("Response too large")
                 
-                self.logger.info("Request successful")
+                self.logger.info("Direct request successful")
                 return response
                 
             except requests.exceptions.Timeout:
@@ -202,3 +390,28 @@ class BaseScraper:
         except Exception as e:
             self.logger.error(f"HTML parsing error: {str(e)}")
             raise ValueError(f"Failed to parse HTML: {str(e)}")
+    
+    def get_scrapingbee_usage_stats(self):
+        """Get ScrapingBee usage statistics (if available)"""
+        if not self.scrapingbee_client:
+            return None
+        
+        try:
+            # The official client doesn't have a direct usage method,
+            # but we can make a simple request to check
+            response = self.scrapingbee_client.get(
+                'https://httpbin.org/status/200',
+                params={'render_js': False}
+            )
+            
+            if hasattr(response, 'headers') and 'Spb-Cost' in response.headers:
+                return {
+                    'status': 'active',
+                    'last_request_cost': response.headers.get('Spb-Cost', 'unknown')
+                }
+            
+            return {'status': 'active'}
+                
+        except Exception as e:
+            self.logger.warning(f"Error checking ScrapingBee status: {str(e)}")
+            return None

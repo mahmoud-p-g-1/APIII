@@ -230,30 +230,7 @@ def process_measurements_test():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@measurements_bp.route('/status/<job_id>', methods=['GET'])
-@require_auth
-def get_measurement_status_auth(job_id):
-    """Get measurement job status (authenticated)"""
-    try:
-        user_id = request.user.get('uid')
-        job_data = get_measurement_job_from_firestore(job_id)
-        
-        if not job_data:
-            return jsonify({'error': 'Job not found'}), 404
-        
-        # Verify job belongs to user
-        if job_data.get('user_id') != user_id:
-            return jsonify({'error': 'Unauthorized'}), 403
-        
-        return jsonify({
-            'job_id': job_data.get('job_id'),
-            'status': job_data.get('status'),
-            'created_at': job_data.get('created_at'),
-            'error': job_data.get('error')
-        }), 200
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+
 
 @measurements_bp.route('/test-status/<job_id>', methods=['GET'])
 def get_measurement_status_test(job_id):
@@ -280,6 +257,107 @@ def get_measurement_status_test(job_id):
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+
+
+@measurements_bp.route('/results/<job_id>', methods=['GET'])
+@require_auth
+def get_measurement_results_auth(job_id):
+    """Get measurement results (authenticated)"""
+    try:
+        user_id = request.user.get('uid')
+        print(f"[AUTH DEBUG] Token user_id: {user_id}")
+        
+        job_data = get_measurement_job_from_firestore(job_id)
+        
+        if not job_data:
+            return jsonify({'error': 'Job not found'}), 404
+        
+        print(f"[AUTH DEBUG] Job user_id: {job_data.get('user_id')}")
+        print(f"[AUTH DEBUG] All job keys: {list(job_data.keys())}")
+        
+        # Check if job belongs to user OR if it's a test job
+        job_user_id = job_data.get('user_id')
+        is_test_job = job_data.get('test_mode', False)
+        
+        if job_user_id != user_id and not is_test_job:
+            return jsonify({
+                'error': 'Unauthorized',
+                'debug_info': {
+                    'token_user_id': user_id,
+                    'job_user_id': job_user_id,
+                    'is_test_job': is_test_job,
+                    'match': job_user_id == user_id
+                }
+            }), 403
+        
+        if job_data.get('status') != 'completed':
+            return jsonify({
+                'error': 'Job not completed',
+                'status': job_data.get('status')
+            }), 400
+        
+        return jsonify({
+            'job_id': job_id,
+            'measurements': job_data.get('measurements'),
+            'confidence_scores': job_data.get('confidence_scores'),
+            'overall_confidence': job_data.get('overall_confidence'),
+            'height_detection_method': job_data.get('height_detection_method'),
+            'detected_height': job_data.get('detected_height'),
+            'completed_at': job_data.get('completed_at'),
+            'image_quality_issues': job_data.get('image_quality_issues', {}),
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+@measurements_bp.route('/status/<job_id>', methods=['GET'])
+@require_auth
+def get_measurement_status_auth(job_id):
+    """Get measurement job status (authenticated)"""
+    try:
+        user_id = request.user.get('uid')
+        print(f"[AUTH DEBUG] Token user_id: {user_id}")
+        
+        job_data = get_measurement_job_from_firestore(job_id)
+        
+        if not job_data:
+            return jsonify({'error': 'Job not found'}), 404
+        
+        print(f"[AUTH DEBUG] Job user_id: {job_data.get('user_id')}")
+        
+        # Check if job belongs to user OR if it's a test job
+        job_user_id = job_data.get('user_id')
+        is_test_job = job_data.get('test_mode', False)
+        
+        if job_user_id != user_id and not is_test_job:
+            return jsonify({
+                'error': 'Unauthorized',
+                'debug_info': {
+                    'token_user_id': user_id,
+                    'job_user_id': job_user_id,
+                    'is_test_job': is_test_job
+                }
+            }), 403
+        
+        return jsonify({
+            'job_id': job_data.get('job_id'),
+            'status': job_data.get('status'),
+            'created_at': job_data.get('created_at'),
+            'error': job_data.get('error'),
+            'image_quality_issues': job_data.get('image_quality_issues', []),
+            'processing_warnings': job_data.get('processing_warnings', [])
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+
 
 @measurements_bp.route('/test-results/<job_id>', methods=['GET'])
 def get_measurement_results_test(job_id):
